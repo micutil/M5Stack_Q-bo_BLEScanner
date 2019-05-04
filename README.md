@@ -1,16 +1,18 @@
 # M5Stack\_Q-bo_BLEScanner
-Q-bo BLE Scannerは、Robi2の付属品であるQ-boからBLE信号を受け取って、その信号に応じた音声ファイルを再生させるとともに、画面上に表示されたQ-bo風の音声に合わせて顔が動くというものです。
+Q-bo BLE Scannerは、Robi2の付属品であるQ-boからBLE信号を受け取って、その信号に応じた音声ファイルを再生させるとともに、画面上に表示されたQ-bo風の音声に合わせて顔が動くというものです。
+
 どのようなプログラムなのかは、以下の像をクリックすると操作中の動画をで観ることができます。(動画は旧バージョンです）<br>
 [![preview](images/preview1.png)](https://www.youtube.com/watch?v=-vYVtkeuwOw)
 
 [![preview](images/preview2.png)](https://www.youtube.com/watch?v=OtDAhQ7s60I)
 
 ## インストール
+「Clone or download」（緑色のボタン）でDownload ZIPを選び、ダウンロードし、zipを解凍します。
 
 ### ① M5Stackに入れるmicroSDを作る
 1. M5Stackに入れるmicroSDに**Q-boのココロ**の中身をコピーします。
-2. 同梱のファイルの中にmicroSDフォルダの中の中のファイルを、microSDにコピーします。その際に、**注意が必要なのは、jpgフォルダとjsonフォルダです。**jpgフォルダやjsonフォルダが既にある場合は、それぞれの中にあるファイルをコピーして下さい。
-3. これでM5Stackに入れるmicroSDの作成は終了です。
+2. 同梱のファイルの中にmicroSDフォルダの中の中のファイルを、microSDにコピーします。その際に、**注意が必要なのは、jpgフォルダとjsonフォルダです。**jpgフォルダやjsonフォルダが既にある場合は、それぞれの中にあるファイルをコピーして下さい。
+3. これでM5Stackに入れるmicroSDの作成は終了です。
 
 ### ② USBドライバーをインストールする
 M5Stackをコンピュータと繋いで、プログラムの転送など通信するためには、Silicon LabsのUSBDriverをインストールする必要があります。もしまだインストールしてなければ
@@ -39,21 +41,21 @@ M5Stackをコンピュータと繋いで、プログラムの転送など通信�
 
 
 ## Arduinoを使う場合に必要な設定
-2. ESP用のAudio関連のライブラリーをダウンロード
+2. ESP用のAudio関連のライブラリーをダウンロード
 	- https://github.com/earlephilhower/ESP8266Audio
 	- bhttps://github.com/Gianbacchio/ESP8266_Spiram<br>
-	それぞれを「Close or download」でダウンロード
-3. 上記でダウンロードした、
-	- ESP8266Audio-masterフォルダ
-	- ESP8266_Spiram-masterフォルダ<br>
-	をArduinoのlibrariesフォルダに入れる
+	それぞれを「Close or download」でダウンロード
+3. 上記でダウンロードした、
+	- ESP8266Audio-masterフォルダ
+	- ESP8266_Spiram-masterフォルダ<br>
+	をArduinoのlibrariesフォルダに入れる
 4. ESP8266Audioの内容を2ヶ所
-	- https://github.com/robo8080/M5Stack_PlayMP3_Avatar_Test​(by robo8080)の ページに書いてある内容に従って、
+	- https://github.com/robo8080/M5Stack_PlayMP3_Avatar_Test​(by robo8080)の ページに書いてある内容に従って、
 	- AudioOutputI2S.h
 	- AudioOutputI2S.cpp<br>
 	を書き換える。
-5. Q-bo BLE Scanner.inoをArduino IDEで開いて下さい。
-6. ボード設定のPartition schemeは「**minimal-SPIFFS**」にして下さい。
+5. Q-bo BLE Scanner.inoをArduino IDEで開いて下さい。
+6. ボード設定のPartition schemeは「**minimal-SPIFFS**」にして下さい。
 
 
 ## 使い方
@@ -62,9 +64,9 @@ M5Stackをコンピュータと繋いで、プログラムの転送など通信�
  
 ボタン
 
-	左のボタン:		ボリュームを下げます。
-	中央のボタン:	ボリュームを上げます。
-	右のボタン:		電源オフ。
+	左のボタン:		ボリュームを下げます。
+	中央のボタン:	ボリュームを上げます。
+	右のボタン:		電源オフ。
 	
 ## 履歴
 	ver 1.5: 2019/01/11
