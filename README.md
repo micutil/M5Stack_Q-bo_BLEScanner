@@ -1,4 +1,4 @@
-# Q-bo_BLEScanner (v1.6)
+# Q-bo BLE Scan (v1.6)
 Q-bo BLE Scannerは、Robi2の付属品であるQ-boからBLE信号を受け取って、その信号に応じた音声ファイルを再生させるとともに、画面上に表示されたQ-bo風の音声に合わせて顔が動くというものです。
 どのようなプログラムなのかは、以下の像をクリックすると操作中の動画をで観ることができます。(動画は旧バージョンです）<br>
 [![preview](images/preview1.png)](https://www.youtube.com/watch?v=-vYVtkeuwOw)
