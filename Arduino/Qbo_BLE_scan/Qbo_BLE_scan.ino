@@ -3,6 +3,7 @@
  * with Q-bo avator
  * for M5Stack
  * 
+ * ver 1.6: 2019/05/17 Odroid-GO対応, スリープ対応, 音声IDの表示を復活
  * ver 1.5: 2019/01/11
  * ver 1.4: 2018/12/11
  * ver 1.3: 2018/11/04
@@ -74,12 +75,20 @@ AudioFileSourceID3 *id3;
   fs::SDFS qbFS=SD;
 #endif
 
+//extern const unsigned char avatar_bg[];
 Avator *avator;
+
+#ifndef ARDUINO_ODROID_ESP32
 int   qbompin=35;     //Mouth LED pin number
 float vMax=4096.0;    //Max analog value of mouth LED voltage
+#endif
+
 float spkvol = 15.0;  //Initial speaker volue level
 bool voicePlay=false; //is playing
-int   ypos;           //Information display Y position
+bool hasMsg=false;    //has Masage.
+int ypos;             //Information display Y position
+int fdridx;           //File Number
+char iddecs[6],idfns[14];//File Number
 
 String qbInfoDir="/QboScanInfo";
 String qboadd="000000000000";
@@ -115,8 +124,6 @@ void playMp3(String mp3fpn)
  */
 void playQboSoundNum(int id) {
   String fp="/GMVRC/D231300525000/DS000.MP3";
-  char iddecs[6],idfns[14];
-  int fdridx;
 
   //File name
   sprintf(iddecs,"DS%03d",id&0x7F);
@@ -127,8 +134,8 @@ void playQboSoundNum(int id) {
   fdridx=444+((id&0xF80)>>7);
   sprintf(idfns,"D231300525%03d",fdridx);
   fp.replace("D231300525000", idfns);
-  
-  Serial.print("Mp3 Path="); Serial.println(fp);
+  Serial.print("Mp3 Path="); Serial.println(fp);  
+  hasMsg=true;
 /*
   //描画するとハングアップしやすくなるので描画しない
   ypos=230-M5.Lcd.fontHeight(GFXFF);
@@ -280,9 +287,12 @@ void scanStart() {
 float breathAmp=1.5;
 
 void volumeChanged() {
+  /*
   ypos=230-M5.Lcd.fontHeight(GFXFF);
   M5.Lcd.drawString("            ", 100, ypos, GFXFF);
   M5.Lcd.drawString(String(spkvol), 100, ypos, GFXFF);
+  delay(5);
+  */
   playMp3("/GMVRC/D231300525452/DS006.MP3");
 }
 
@@ -311,7 +321,9 @@ void drawLoop(void *args)
         level = (float)level/20000.0;
         avator->setMouthOpen(level);
       }
-    } else {
+    }
+    #ifndef ARDUINO_ODROID_ESP32
+    else {
       level = analogRead(qbompin);
       //Serial.println(v);
       if(level>0) {
@@ -322,6 +334,7 @@ void drawLoop(void *args)
         avator->setMouthOpen(0.0);
       }
     }
+    #endif
     avator->draw();
     vTaskDelay(40);//(33);//
   }
@@ -346,6 +359,24 @@ void blinking(void *args)
     vTaskDelay(2500 + 100 * random(20));
     avator->setEyeOpen(0);
     vTaskDelay(300 + 10 * random(20));
+  }
+}
+
+void showMsg(void *args)
+{
+  for(;;)
+  {
+    if(hasMsg) {
+      hasMsg=false;
+      ypos=230-M5.Lcd.fontHeight(GFXFF);
+      //M5.Lcd.drawString("INFO:", 10, ypos, GFXFF);
+      int reqcnt=strtol(qbocnt.c_str(), NULL, 16);//数値化
+      M5.Lcd.drawString("               ", 100, ypos, GFXFF);
+      M5.Lcd.drawString(String(reqcnt), 100, ypos, GFXFF);
+      M5.Lcd.drawString(String(fdridx), 150, ypos, GFXFF);
+      M5.Lcd.drawString(iddecs,         200, ypos, GFXFF);
+    }
+    vTaskDelay(100);
   }
 }
 
@@ -385,6 +416,14 @@ void startAvatar()
               3,         /* Priority of the task */
               NULL);//,      /* Task handle. */
               //1);        /* Core where the task should run */
+  xTaskCreate(
+              showMsg,     /* Function to implement the task */
+              "showMsg",   /* Name of the task */
+              4096,      /* Stack size in words */
+              NULL,      /* Task input parameter */
+              5,         /* Priority of the task */
+              NULL);//,      /* Task handle. */
+              //1);        /* Core where the task should run */
 }
 
 
@@ -395,23 +434,27 @@ void startAvatar()
  ****************************************/
 
 void setup() {
-  M5.begin();
-  //Wire.begin();
 
+  //Initialize M5tack...
+  M5.begin();
+
+  //For SD-Updater
+  Wire.begin();
   if(digitalRead(BUTTON_A_PIN) == 0) {
     Serial.println("Will Load menu binary");
     updateFromFS(SD);
     ESP.restart();
   }
-  
-  WiFi.disconnect(true);
-   
-  M5.Lcd.setBrightness(30);
-  //WiFi.mode(WIFI_OFF); 
-  delay(500);
 
+  //Don't use WiFi 
+  WiFi.disconnect(true);
+  //M5.Lcd.setBrightness(30);
+  //WiFi.mode(WIFI_OFF); 
+  //delay(500);
+
+  #ifndef ARDUINO_ODROID_ESP32
   pinMode(qbompin, INPUT);
-//  pinMode(5, INPUT);
+  #endif
   
   //pinMode(25, OPEN_DRAIN);
   //i2s_set_dac_mode(I2S_DAC_CHANNEL_RIGHT_EN);
@@ -423,7 +466,7 @@ void setup() {
   M5.Lcd.setTextColor(TFT_WHITE, 0x00DB88);
   delay(1500);
 
-  Serial.begin(115200);
+  //Serial.begin(115200);
 
   //Start SPIFFS or microSD
 #ifdef useSPIFFS
@@ -437,9 +480,12 @@ void setup() {
 
   //Q-bo BLE情報保存ディレクトリ作成
   createDir(qbFS,qbInfoDir.c_str());
+  delay(10);//for ARDUINO_ODROID_ESP32
   
   //Q-bo 顔画像 表示
+  //M5.Lcd.drawJpg(avatar_bg, 30985);
   M5.Lcd.drawJpgFile(SD, "/Qboface.jpg");
+  delay(10);//for ARDUINO_ODROID_ESP32
   
   Serial.println("BLE Scanning...");
   //最初に一度だけ行う
@@ -458,6 +504,8 @@ void setup() {
   mp3 = new AudioGeneratorMP3();
 
   startAvatar();
+  delay(10);//for ARDUINO_ODROID_ESP32
+  
   //playMp3("/GMVRC/D231300525448/DS041.MP3");
   playMp3("/Message/Start_sound.mp3");
   
@@ -473,28 +521,50 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   M5.update();
+
+  #ifdef ARDUINO_ODROID_ESP32
+  /*
+  int joyYwasPressed=M5.JOY_Y.wasAxisPressed();
+  bool btnAwasPressed=M5.BtnA.wasPressed();
+  bool btnBwasPressed=M5.BtnB.wasPressed();
+  */
+  #endif
   
-  //A button
+  //Volume Down
+  #ifndef ARDUINO_ODROID_ESP32
   if(M5.BtnA.wasPressed()) {
+  #else
+  if(M5.BtnB.wasPressed()) {
+  #endif
     spkvol=spkvol-15.0;
     if(spkvol<0) spkvol=0;
     aout->SetGain(spkvol/100.0);
-    volumeChanged();
+    volumeChanged(); return;
   }
 
-  //B button
+  //Volume Up
+  #ifndef ARDUINO_ODROID_ESP32
   if(M5.BtnB.wasPressed()) {
+  #else
+  if(M5.BtnA.wasPressed()) {
+  #endif
     spkvol=spkvol+15.0;
     if(spkvol>100) spkvol=100.0;
     aout->SetGain(spkvol/100.0);
-    volumeChanged();
+    volumeChanged(); return;
   }
 
   //C button
+  //#ifndef ARDUINO_ODROID_ESP32
   if(M5.BtnC.wasPressed()) {
-    M5.powerOFF();
+    //M5.powerOFF();
+    Serial.println( "Sleep..." );
+    M5.Lcd.setBrightness(0);
+    M5.Lcd.sleep();
+    esp_sleep_enable_ext0_wakeup((gpio_num_t)BUTTON_B_PIN, LOW);
+    esp_deep_sleep_start();
   }
-
+  //#endif
 
   //プレー中か？
   if(mp3->isRunning()) {
@@ -523,7 +593,7 @@ void loop() {
 
   }
 
-  delay(5);
+  delay(2);
 }
 
 /******************************************************/
