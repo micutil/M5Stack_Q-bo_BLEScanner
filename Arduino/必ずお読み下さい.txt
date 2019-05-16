@@ -5,6 +5,9 @@ Qbo_BLE_scanフォルダの中にArduino用の
 Qbo_BLE_scanフォルダをArduinoの
 スケッチ保存用フォルダに入れて使って下さい。
 
+Odroid-GOを作成する場合は、
+tobozoさんのESP32 chimera coreをM5Stackのライブラリと入れ替える必要があります。
+
 なお、このアーカイブに含まれるすべてのファイル等に関して、
 CC BY-NC-SA（英: Creative Commons Attribution-NonCommercial-ShareAlike、日: クリエイティブ・コモンズ 表示-非営利-改変禁止）は、作品を複製、頒布、展示、実演を行うにあたり、著作権者の表示を要求し、非営利目的での利用に限定し、作品を改変・変形・加工してできた作品についても、元になった作品のライセンスを継承させた上で頒布を認める。
 
