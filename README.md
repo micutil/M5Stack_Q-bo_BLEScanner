@@ -1,5 +1,9 @@
 # Q-bo BLE Scan (v1.6)
-Q-bo BLE Scannerは、Robi2の付属品であるQ-boからBLE信号を受け取って、その信号に応じた音声ファイルを再生させるとともに、画面上に表示されたQ-bo風の音声に合わせて顔が動くというものです。
+Q-bo BLE Scannerは、Robi2の付属品であるQ-boからBLE信号を受け取って、その信号に応じた音声ファイルを再生させるとともに、画面上に表示されたQ-bo風の音声に合わせて顔が動くというものです。
+
+[LovyanLauncher](https://github.com/lovyan03/M5Stack_LovyanLauncher)に対応していて、microSDからの起動には[LovyanLauncher](https://github.com/lovyan03/M5Stack_LovyanLauncher)もインストールされている必要があります。
+
+**注意：Odroid-GOメニューを使う場合（初期状態の場合）は[LovyanLauncher](https://github.com/lovyan03/M5Stack_LovyanLauncher)のインストールは必要はありません。microSDには[Skeleton file](https://wiki.odroid.com/odroid_go/make_sd_card)を使います。**
 どのようなプログラムなのかは、以下の像をクリックすると操作中の動画をで観ることができます。(動画は旧バージョンです）<br>
 [![preview](images/preview1.png)](https://www.youtube.com/watch?v=-vYVtkeuwOw)
 
@@ -14,34 +18,60 @@ Q-bo BLE Scannerは、Robi2の付属品であるQ-boからBLE信号を受け取�
 ## インストール
 
 ### ① M5Stack/Odroid-GOに入れるmicroSDを作る
+Odroid-GOメニューを使う場合（初期状態の場合）は[Skeleton file](https://wiki.odroid.com/odroid_go/make_sd_card)を作成しておきます。
+
 1. microSDに**Q-boのココロ**の中身をコピーします。
-2. 同梱のファイルの中にmicroSDフォルダの中の中のファイルを、microSDにコピーします。その際に、**注意が必要なのは、jpgフォルダとjsonフォルダです。**jpgフォルダやjsonフォルダが既にある場合は、それぞれの中にあるファイルをコピーして下さい。
+2. 同梱のファイルの中にmicroSDフォルダの中のファイルを、microSDにコピーします。その際に、**すでにフォルダがある場合は結合させて、すでにコピーされているファイルを消さないようにご注意下さい**。
 3. これでmicroSDの作成は終了です。
+
+### ビルド済みファイル
+- in M5_Gamebin ... 4M minimal SPIFFS partition scheme.
+- in MF_Gamebin ... Fire defaut partition scheme.
+- in OG_Gamebin ... bin file for Odroid-GO.
+- in odroid/firmwares ... fw file for Odroid-GO Menu Control.
 
 ### ② USBドライバーをインストールする
 M5Stackをコンピュータと繋いで、プログラムの転送など通信するためには、Silicon LabsのUSBDriverをインストールする必要があります。もしまだインストールしてなければ
 [シリアル接続の確立方法](https://docs.m5stack.com/#/ja/related_documents/establish_serial_connection)
-のサイトを参考にしてインストールして下さい。
+のサイトを参考にしてインストールして下さい。**Odroid-GOメニューを使う場合は必ずしもドライバーのインストールをする必要はありません**
 
 > なお、Macの場合、インストールしただけではセキュリティが通ってないので、インストール後、環境設定のセキュリティとプライバシーの一般で、インストールしたドライバーの許可をして下さい。
 > 
 ![セキュリティ](images/kyoka.jpg)
 
-### ③ M5Burner_Micで、M5StackにSD-Menuをインストールする
-"M5Burner\_Mic"というプログラムでSD-MenuをM5Stackにインストールします。すでにSD-MenuまたはLovyanLauncherをインストールしてある場合はこのステップは必要ありません。
+### ③ M5Burner_Micで、LovyanLauncherをインストールする
+**Odroid-GOメニューを使う場合はこの操作を行ってはいけません!!!**
 
-1. [M5Burner_Mic](https://github.com/micutil/M5Burner_Mic) のページから「Download [here](http://micutil.com/download/M5Burner_Mic.zip)」の所でM5Burner\_Micをダウンロードし、解凍して下さい。M5Burner\_Micフォルダはお好みの場所に入れて下さい。
-2. M5Stackに付いてきたUSB-CケーブルでパソコンとM5Stackを繋げて下さい。
+"[M5Burner_Mic](https://github.com/micutil/M5Burner_Mic)"というプログラムで[LovyanLauncher](https://github.com/lovyan03/M5Stack_LovyanLauncher)をM5StackまたはOdroid-GOにインストールする方法を説明します。
+
+1. [M5Burner_Mic](https://github.com/micutil/M5Burner_Mic) のページから「Download [here](http://micutil.com/download/M5Burner_Mic.zip)」の所でM5Burner\_Micをダウンロードし、解凍して下さい。M5Burner\_Micフォルダはお好みの場所に入れて下さい（**フルパスに日本語名を含まない場所に置くのが無難です**）。
+2. M5Stackにインストールする場合：[LovyanLauncher firmware](https://github.com/lovyan03/LovyanLauncher-firmware)のページから「Clone or download」のボタンでダウンロードし解凍。LovyanLauncher-firmware-masterフォルダをM5Burner\_Micのフォルダの中にあるfirmwaresフォルダにコピーして下さい。
+3. Odroid-GOにインストールする場合：[Odroid-GO版のLovyanLauncher](https://github.com/lovyan03/M5Stack_LovyanLauncher/blob/master/LovyanLauncher/build_odroid_go/LovyanLauncher.bin)のページの「Download」ボタンをクリックするとダウンロードできます。ダウンロードしたLovyanLauncher.binは、M5Burner\_Mic起動後、M5Burner\_Micのウインドウに**ドラッグ＆ドロップ**して下さい。
+2. USBケーブルでパソコンとM5StackまたはOdroid-GOを繋げて下さい。
 3. M5Burner\_Micをダブルクリックして起動します。
-4. USBシリアルポートをM5Stackのポートに設定します。
+4. USBシリアルポートをM5StackまたはOdroid-GOのポートに設定します。
  - Macの場合はポートに名前がつくので「**SLAB_USBtoUART**」という名前のポートを選んで下さい。
  - Windowsの場合は、**COM3**とか、COM4とかの名前になっています。ひとつしか表示されてなかったら、それがM5Stackのポートでしょう。もしいくつか表示されているようだったら、コントロールパネルから、デバイスマネージャーのポートをみて番号を確認して下さい。例えば以下の図の場合だと**COM4**であるということになります。<br>![ポート番号](images/portnum.jpg)
-5. 「Priset」のポップアップメニューでM5Stack用もしくはOdroid-GO用の「**SD-Menu**」の最新版を選択します。
+5. 「Priset」のポップアップメニューで「**LovyanLauncher......**」を選択します。
 6. 「**Start**」ボタンをクリックすると、プログラムの転送が開始します。
-7. プログラムの転送が終わるとM5Stackがリセットされ、インストールした**SD-Menu**が起動します。
-8. M5StackのCボタン（右）を何回か押して、Q-bo\_BLE_Scannerを選択し、Bボタン（中央）のボタンを押すと、RSTesterが起動します。操作方法は後で説明します。
-9. microSDにmenu.binが入ってない場合は、M5Burner_Micのfirmwaresフォルダの中のtobozoフォルダの中のM5StackもしくはOdroid-GOのフォルダの中に**menu.bin**があるので、それをmicroSDにコピーして下さい。
-9. 再度、メニューを表示する場合は、Aボタン（左）を押しながらリセットボタン（左上側面）を押すとQ-bo\_BLE_Scannerが起動します。
+7. プログラムの転送が終わるとM5StackまたはOdroid-GOは、リセットされ、インストールした**LovyanLauncher**が起動します。
+
+#### LovyanLauncherの操作
+	1. メニューの**SD-Updater**を選択して"OK"
+	2. microSDに入ってるプログラムの一覧が表示されます。
+	3. 目的のプログラムを探して選択し、"OK"
+	4. 起動する場合は、"Execute"
+
+#### ODROID-GO Device Firmware Menu Controlsの操作
+
+	1. 電源スイッチ OFF
+	2. Bボタンを押したまま, 電源スイッチ On
+	3. メニューが表示されたらBボタンを離す
+
+	アプリケーションF/Wの起動
+	- A ボタン: アプリケーションF/Wを選択
+	- B ボタン: キャンセル
+	- Start ボタン: アプリケーションF/Wの書き込み
 
 
 ## Arduinoを使う場合に必要な設定
